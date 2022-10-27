@@ -8,9 +8,7 @@
 #include <iostream>
 #include <string>
 
-std::deque<std::string> history;
-
-void update_hist(const std::string& line) {
+void update_hist(const std::string& line, std::deque<std::string>& history) {
     history.push_back(line);
     if(history.size() > 15) {
         history.pop_front();
@@ -46,6 +44,7 @@ std::string exec(const std::string &command) {
 
 
 int main() {
+    std::deque<std::string> history;
     std::string host = exec("whoami");
 
     while(true){
@@ -59,15 +58,15 @@ int main() {
         switch(hash(line.c_str())) {
             case hash("listdir"):
                 std::cout << exec("ls") << std::endl << std::flush;
-                update_hist(line);
+                update_hist(line, history);
                 continue;
             case hash("mycomputername"):
                 std::cout << exec("hostname") << std::endl << std::flush;
-                update_hist(line);
+                update_hist(line, history);
                 continue;
             case hash("whatsmyip"):
                 std::cout << exec("echo $(dig +short myip.opendns.com @resolver1.opendns.com)") << std::endl << std::flush;
-                update_hist(line);
+                update_hist(line, history);
                 continue;
             case hash("dididothat"):
                 std::getline(std::cin, line);
@@ -78,7 +77,7 @@ int main() {
                 line.erase(0, 2); // Delete first space and first quotation mark.
                 line.pop_back(); // Delete last quotation mark.
                 std::cout << (std::count(history.begin(), history.end(), line) > 0 ? "YES" : "NO") << std::endl << std::flush;
-                update_hist(whole_line);
+                update_hist(whole_line, history);
                 continue;
             case hash("printfile"):
                 std::getline(std::cin, line);
@@ -86,7 +85,7 @@ int main() {
                     line.pop_back();
                 }
                 whole_line += line;
-                update_hist(whole_line);
+                update_hist(whole_line, history);
                 if(std::count(line.begin(), line.end(), '>') > 0) {
                     exec("cat " + line);
                     continue;
