@@ -61,13 +61,15 @@ int main() {
     std::string host = exec("whoami"); // Storing this to use in each command.
 
     while(true){
+	// Print the host before each command.
         std::cout << host << " >>> " << std::flush;
 
-        std::string line;
+        std::string line; // Line here will behave as a token.
         std::string whole_line;
 
         std::cin >> line;
         whole_line += line;
+
         switch(hash(line.c_str())) { // Comparing the hash of the input to predefined commands.
             case hash("listdir"):
                 std::cout << exec("ls") << std::endl;
@@ -82,7 +84,7 @@ int main() {
                 std::cout << exec("echo $(dig +short myip.opendns.com @resolver1.opendns.com)") << std::endl;
                 update_hist(line, history);
                 continue;
-            case hash("dididothat"):
+            case hash("dididothat"): // Implemented as if there will be quotation marks.
                 std::getline(std::cin, line);
                 if(!line.empty() && line.back() == '\n') { // Deleting the last escape as std::getline also records it.
                     line.pop_back();
@@ -120,7 +122,8 @@ int main() {
                 continue;
             case hash("hellotext"):
                 // There's no default way to open the default editor in Ubuntu 20.04
-                // $EDITOR and $VISUAL are empty.
+                // $EDITOR and $VISUAL are empty, and xdg-open is not a safe way to achieve this.
+		// Simply using gedit as assumed.
                 exec("gedit");
                 continue;
             case hash("exit"):
@@ -130,7 +133,5 @@ int main() {
                 std::cout << "ERROR: " << line << " cannot be processed." << '\n' << std::flush;
                 return 0;
         }
-
     }
-
 }
