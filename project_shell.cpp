@@ -1,5 +1,6 @@
 //
 // Created by Ömer Talip Akalın on 22.10.2022.
+// The code is self-explanatory.
 //
 
 #include <algorithm>
@@ -29,17 +30,20 @@ constexpr unsigned int hash(const char* s, int off = 0) {
 
 // This function is the core of our shell - it executes a command and fetches its output using popen().
 std::string exec(const std::string &command) {
+    // Creates a pipe, forks and invokes the shell by given command.
     auto pipe = popen(command.c_str(), "r");
     std::string result;
 
     int curr_c;
 
+    // Unsuccessful piping.
     if(pipe == nullptr) {
         auto error_str = "ABORTED: " + command;
         std::cout << error_str << std::endl;
         exit(42);
     }
 
+    // Fetching char by char to enable dynamic buffer on std::string.
     while((curr_c = fgetc(pipe)) != EOF) {
         result += (char)curr_c;
     }
@@ -113,6 +117,11 @@ int main() {
                         }
                     }
                 }
+                continue;
+            case hash("hellotext"):
+                // There's no default way to open the default editor in Ubuntu 20.04
+                // $EDITOR and $VISUAL are empty.
+                exec("gedit");
                 continue;
             case hash("exit"):
                 return 0; // Exit.
